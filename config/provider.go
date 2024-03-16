@@ -10,11 +10,14 @@ import (
 
 	ujconfig "github.com/crossplane/upjet/pkg/config"
 
-	"github.com/frost2sam/provider-upjet-yc-vpc/config/null"
+	"github.com/frost2sam/provider-upjet-yc-vpc/config/iam"
+	"github.com/frost2sam/provider-upjet-yc-vpc/config/organizationmanager"
+	"github.com/frost2sam/provider-upjet-yc-vpc/config/resourcemanager"
+	"github.com/frost2sam/provider-upjet-yc-vpc/config/vpc"
 )
 
 const (
-	resourcePrefix = "upjet-yc-vpc"
+	resourcePrefix = "yandex-cloud"
 	modulePath     = "github.com/frost2sam/provider-upjet-yc-vpc"
 )
 
@@ -36,7 +39,10 @@ func GetProvider() *ujconfig.Provider {
 
 	for _, configure := range []func(provider *ujconfig.Provider){
 		// add custom config functions
-		null.Configure,
+		resourcemanager.Configure,
+		organizationmanager.Configure,
+		iam.Configure,
+		vpc.Configure,
 	} {
 		configure(pc)
 	}

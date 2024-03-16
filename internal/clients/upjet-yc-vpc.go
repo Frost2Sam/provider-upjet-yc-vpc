@@ -19,6 +19,45 @@ import (
 )
 
 const (
+	// The default folder ID where resources will be placed
+	folderID = "folder_id"
+	// ID of Yandex.Cloud tenant
+	cloudID = "cloud_id"
+	// The API endpoint for Yandex.Cloud SDK client
+	endpoint = "endpoint"
+	// Either the path to or the contents of a Service Account key file in JSON format
+	serviceAccountKeyFile = "service_account_key_file"
+	// The region where operations will take place
+	regionID = "region_id"
+	// The zone where operations will take place. Examples: are ru-central1-a, ru-central2-c, etc
+	zoneID = "zone"
+	// The access token for API operations
+	token = "token"
+	// Explicitly allow the provider to perform "insecure" SSL requests, default value is `false
+	allowInsecure = "insecure"
+	// Disable use of TLS. Default value is `false`.
+	plainText = "plaintext"
+	// The maximum number of times an API request is being executed. If the API request still fails, an error is thrown.
+	maxRetries = "max_retries"
+	// Yandex.Cloud storage service endpoint
+	storageEndpoint = "storage_endpoint"
+	// Yandex.Cloud storage service access key. Used when a storage data/resource doesn't have an access key explicitly specified
+	storageAccessKey = "storage_access_key"
+	// Yandex.Cloud storage service secret key. Used when a storage data/resource doesn't have a secret key explicitly specified
+	storageSecretKey = "storage_secret_key"
+	// Yandex.Cloud Message Queue service endpoint
+	ymqEndpoint = "ymq_endpoint"
+	// Yandex.Cloud Message Queue service access key
+	ymqAccessKey = "ymq_access_key"
+	// Yandex.Cloud Message Queue service secret key
+	ymqSecretKey = "ymq_secret_key"
+	// Path to shared credentials file
+	sharedCredentialsFile = "shared_credentials_file"
+	// Profile to use in the shared credentials file. Default value is `default`.
+	profile = "profile"
+)
+
+const (
 	// error messages
 	errNoProviderConfig     = "no providerConfigRef provided"
 	errGetProviderConfig    = "cannot get referenced ProviderConfig"
@@ -62,11 +101,22 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 			return ps, errors.Wrap(err, errUnmarshalCredentials)
 		}
 
-		// Set credentials in Terraform provider configuration.
-		/*ps.Configuration = map[string]any{
-			"username": creds["username"],
-			"password": creds["password"],
-		}*/
+		// set provider configuration
+		ps.Configuration = map[string]any{}
+
+		// Either the path to or the contents of a Service Account key file in JSON format
+		ps.Configuration[serviceAccountKeyFile] = string(data)
+
+		for _, setting := range []string{
+			folderID, cloudID, endpoint, regionID, zoneID, token,
+			allowInsecure, plainText, maxRetries, storageEndpoint, storageAccessKey,
+			storageSecretKey, ymqEndpoint, ymqAccessKey, ymqSecretKey, sharedCredentialsFile, profile,
+		} {
+			if value, ok := creds[setting]; ok {
+				ps.Configuration[setting] = value
+			}
+		}
+
 		return ps, nil
 	}
 }

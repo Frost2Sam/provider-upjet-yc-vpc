@@ -4,15 +4,15 @@
 PROJECT_NAME ?= provider-upjet-yc-vpc
 PROJECT_REPO ?= github.com/frost2sam/$(PROJECT_NAME)
 
-export TERRAFORM_VERSION ?= 1.2.1
+export TERRAFORM_VERSION ?= 1.6.1
 
-export TERRAFORM_PROVIDER_SOURCE ?= hashicorp/null
-export TERRAFORM_PROVIDER_REPO ?= https://github.com/hashicorp/terraform-provider-null
-export TERRAFORM_PROVIDER_VERSION ?= 3.1.0
-export TERRAFORM_PROVIDER_DOWNLOAD_NAME ?= terraform-provider-null
-export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= https://releases.hashicorp.com/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)/$(TERRAFORM_PROVIDER_VERSION)
-export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-null_v3.1.0_x5
-export TERRAFORM_DOCS_PATH ?= docs/resources
+export TERRAFORM_PROVIDER_SOURCE ?= yandex-cloud/yandex
+export TERRAFORM_PROVIDER_REPO ?= https://github.com/yandex-cloud/terraform-provider-yandex
+export TERRAFORM_PROVIDER_VERSION ?= 0.112.0
+export TERRAFORM_PROVIDER_DOWNLOAD_NAME ?= terraform-provider-yandex
+export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= https://hashicorp-releases.yandexcloud.net/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)/$(TERRAFORM_PROVIDER_VERSION)
+export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-yandex_v0.112.0_x5
+export TERRAFORM_DOCS_PATH ?= website/docs/r
 
 
 PLATFORMS ?= linux_amd64 linux_arm64
@@ -40,8 +40,8 @@ NPROCS ?= 1
 # to half the number of CPU cores.
 GO_TEST_PARALLEL := $(shell echo $$(( $(NPROCS) / 2 )))
 
-GO_REQUIRED_VERSION ?= 1.19
-GOLANGCILINT_VERSION ?= 1.50.0
+GO_REQUIRED_VERSION ?= 1.22
+GOLANGCILINT_VERSION ?= 1.55.2
 GO_STATIC_PACKAGES = $(GO_PROJECT)/cmd/provider $(GO_PROJECT)/cmd/generator
 GO_LDFLAGS += -X $(GO_PROJECT)/internal/version.Version=$(VERSION)
 GO_SUBDIRS += cmd internal apis
@@ -50,10 +50,10 @@ GO_SUBDIRS += cmd internal apis
 # ====================================================================================
 # Setup Kubernetes tools
 
-KIND_VERSION = v0.15.0
-UP_VERSION = v0.18.0
+KIND_VERSION = v0.22.0
+UP_VERSION = v0.24.2
 UP_CHANNEL = stable
-UPTEST_VERSION = v0.5.0
+UPTEST_VERSION = v0.11.0
 -include build/makelib/k8s_tools.mk
 
 # ====================================================================================
@@ -104,7 +104,7 @@ TERRAFORM_PROVIDER_SCHEMA := config/schema.json
 $(TERRAFORM):
 	@$(INFO) installing terraform $(HOSTOS)-$(HOSTARCH)
 	@mkdir -p $(TOOLS_HOST_DIR)/tmp-terraform
-	@curl -fsSL https://releases.hashicorp.com/terraform/$(TERRAFORM_VERSION)/terraform_$(TERRAFORM_VERSION)_$(SAFEHOST_PLATFORM).zip -o $(TOOLS_HOST_DIR)/tmp-terraform/terraform.zip
+	@curl -fsSL https://hashicorp-releases.yandexcloud.net/terraform/$(TERRAFORM_VERSION)/terraform_$(TERRAFORM_VERSION)_$(SAFEHOST_PLATFORM).zip -o $(TOOLS_HOST_DIR)/tmp-terraform/terraform.zip
 	@unzip $(TOOLS_HOST_DIR)/tmp-terraform/terraform.zip -d $(TOOLS_HOST_DIR)/tmp-terraform
 	@mv $(TOOLS_HOST_DIR)/tmp-terraform/terraform $(TERRAFORM)
 	@rm -fr $(TOOLS_HOST_DIR)/tmp-terraform
